@@ -23,9 +23,6 @@ const getUserById = (req, res) => {
     }
     res.status(INTERNAL_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
   });
-
-  // .then((userData) => res.status(200).send({ data: userData }))
-  // .catch(() => res.status(ERROR_CODE).send({ message: 'Запрашиваемый пользователь не найден' }));
 };
 
 const createUser = (req, res) => {
