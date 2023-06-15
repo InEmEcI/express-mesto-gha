@@ -8,6 +8,6 @@ const cardRoutes = require('./cards');
 router.use(userRoutes);
 router.use(cardRoutes);
 router.use('/*', (req, res) => {
-  res.status(NOT_FOUND_ERROR).send({ messege: 'Страница не найдена' });
+  res.status(NOT_FOUND_ERROR).send({ message: 'Страница не найдена' });
 });
 module.exports = router;
