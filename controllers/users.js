@@ -10,9 +10,22 @@ const getUsers = (req, res) => {
 
 const getUserById = (req, res) => {
   const user = req.params._id;
-  User.findById(user)
-    .then((userData) => res.status(200).send({ data: userData }))
-    .catch(() => res.status(NOT_FOUND_ERROR).send({ message: 'Запрашиваемый пользователь не найден' }));
+  User.findById(user).then((userData) => {
+    if (!userData) {
+      res.status(NOT_FOUND_ERROR).send({ message: 'Запрашиваемый пользователь не найден' });
+      return;
+    }
+    res.send({ data: userData });
+  }).catch((error) => {
+    if (error.name === 'CastError') {
+      res.status(ERROR_CODE).send({ message: 'ID неверный' });
+      return;
+    }
+    res.status(INTERNAL_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
+  });
+
+  // .then((userData) => res.status(200).send({ data: userData }))
+  // .catch(() => res.status(ERROR_CODE).send({ message: 'Запрашиваемый пользователь не найден' }));
 };
 
 const createUser = (req, res) => {
