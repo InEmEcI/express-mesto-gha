@@ -3,15 +3,16 @@ const { INTERNAL_SERVER_ERROR, ERROR_CODE, NOT_FOUND_ERROR } = require('../utils
 const User = require('../models/user');
 
 const getUsers = (req, res) => {
-  User.find({}).then((user) => {
-    res.status(200).send(user);
-  });
+  User.find({})
+    .then((user) => { res.status(200).send(user); })
+    .catch(() => res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' }));
 };
 
 const getUserById = (req, res) => {
   const user = req.params._id;
   User.findById(user)
-    .then((userData) => res.status(200).send({ data: userData }));
+    .then((userData) => res.status(200).send({ data: userData }))
+    .catch(() => res.status(ERROR_CODE).send({ message: 'Запрашиваемый пользователь не найден' }));
 };
 
 const createUser = (req, res) => {
