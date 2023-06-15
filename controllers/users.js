@@ -12,7 +12,7 @@ const getUserById = (req, res) => {
   const user = req.params._id;
   User.findById(user)
     .then((userData) => res.status(200).send({ data: userData }))
-    .catch(() => res.status(ERROR_CODE).send({ message: 'Запрашиваемый пользователь не найден' }));
+    .catch(() => res.status(NOT_FOUND_ERROR).send({ message: 'Запрашиваемый пользователь не найден' }));
 };
 
 const createUser = (req, res) => {

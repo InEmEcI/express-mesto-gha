@@ -45,19 +45,19 @@ const deleteCardById = (req, res) => {
 };
 
 const likeCard = (req, res) => {
-  const cardId = req.params._id;
+  const idCard = req.params.cardId;
   const userId = req.user._id;
   Card.findByIdAndUpdate(
-    cardId,
+    idCard,
     { $addToSet: { likes: userId } }, // добавить _id в массив, если его там нет
     { new: true },
   )
     .then((card) => {
       if (!card) {
-        res.status(NOT_FOUND_ERROR).send({ message: 'Запрашиваемая карточка не найдена' });
+        res.status(ERROR_CODE).send({ message: 'Запрашиваемая карточка не найдена' });
         return;
       }
-      res.send({ data: card });
+      res.status(200).send({ data: card });
     })
     .catch((error) => {
       if (error.name === 'CastError') {
@@ -69,16 +69,16 @@ const likeCard = (req, res) => {
 };
 
 const dislikeCard = (req, res) => {
-  const cardId = req.params._id;
+  const idCard = req.params.cardId;
   const userId = req.user._id;
 
   Card.findByIdAndUpdate(
-    cardId,
+    idCard,
     { $pull: { likes: userId } }, // убрать _id из массива
     { new: true },
   ).then((card) => {
     if (!card) {
-      res.status(NOT_FOUND_ERROR).send({ message: 'Запрашиваемая карточка не найдена' });
+      res.status(ERROR_CODE).send({ message: 'Запрашиваемая карточка не найдена' });
       return;
     }
     res.send({ data: card });
