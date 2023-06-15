@@ -4,7 +4,7 @@ const {
   createCard,
   deleteCardById,
   likeCard,
-  // dislikeCard,
+  dislikeCard,
 } = require('../controllers/cards');
 
 router.get('/cards', getCards);
@@ -19,6 +19,6 @@ router.put('/cards/:cardId/likes', likeCard);
 
 // убрать лайк с карточки
 // DELETE /cards/:cardId/likes
-// router.delete('/cards/:cardId/likes', dislikeCard);
+router.delete('/cards/:cardId/likes', dislikeCard);
 
 module.exports = router;

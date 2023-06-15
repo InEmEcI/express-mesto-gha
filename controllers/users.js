@@ -5,7 +5,7 @@ const User = require('../models/user');
 const getUsers = (req, res) => {
   User.find({})
     .then((user) => { res.status(200).send(user); })
-    .catch(() => res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' }));
+    .catch(() => res.status(INTERNAL_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' }));
 };
 
 const getUserById = (req, res) => {
@@ -16,10 +16,21 @@ const getUserById = (req, res) => {
 };
 
 const createUser = (req, res) => {
-  const newUserData = req.body;
-  User.create(newUserData)
-    .then((newUser) => res.status(201).send(newUser))
-    .catch((error) => console.log(`Произошла ошибка ${error}`));
+  const { name, about, avatar } = req.body;
+
+  User.create({ name, about, avatar })
+    .then((userData) => {
+      res
+        .status(201)
+        .send({ data: userData });
+    })
+    .catch((error) => {
+      if (error.name === 'ValidationError') {
+        res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные' });
+      } else {
+        res.status(INTERNAL_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
+      }
+    });
 };
 
 const updateUser = (req, res) => {
