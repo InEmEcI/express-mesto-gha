@@ -10,11 +10,6 @@ const {
   // CONFLICTING_REQUEST_ERROR,
 } = require('../utils/errors');
 
-// const INTERNAL_SERVER_ERROR = require('../utils/errors/InternalServerError');
-// const ERROR_CODE = require('../utils/errors/ErrorCode');
-// const NOT_FOUND_ERROR = require('../utils/errors/NotFoundError');
-// const CONFLICTING_REQUEST_ERROR = require('../utils/errors/ConflictingRequestError');
-
 const getUsers = (req, res) => {
   User.find({})
     .then((user) => {
@@ -69,7 +64,6 @@ const createUser = (req, res, next) => {
     .catch((error) => {
       if (error.name === 'ValidationError') {
         next(
-          // new ERROR_CODE('Переданы некорректные данные'),
           res
             .status(ERROR_CODE)
             .send({ message: 'Переданы некорректные данные' }),
@@ -77,7 +71,6 @@ const createUser = (req, res, next) => {
       }
       if (error.code === 11000) {
         next(
-          // new ERROR_CODE('Такой пользователь уже существует'),
           res
             .status(ERROR_CODE)
             .send({ message: 'Такой пользователь уже существует' }),
