@@ -65,14 +65,14 @@ const createUser = (req, res, next) => {
       if (error.name === 'ValidationError') {
         next(
           res
-            .status(ERROR_CODE)
+            .status(INTERNAL_SERVER_ERROR)
             .send({ message: 'Переданы некорректные данные' }),
         );
       }
       if (error.code === 11000) {
         next(
           res
-            .status(ERROR_CODE)
+            .status(INTERNAL_SERVER_ERROR)
             .send({ message: 'Такой пользователь уже существует' }),
         );
       }
