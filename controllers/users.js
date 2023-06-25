@@ -1,64 +1,148 @@
-/* eslint-disable no-console */
-const { INTERNAL_SERVER_ERROR, ERROR_CODE, NOT_FOUND_ERROR } = require('../utils/errors');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+
+const {
+  INTERNAL_SERVER_ERROR,
+  ERROR_CODE,
+  NOT_FOUND_ERROR,
+  UNAUTHORIZED_ERROR,
+  // CONFLICTING_REQUEST_ERROR,
+} = require('../utils/errors');
+
+// const INTERNAL_SERVER_ERROR = require('../utils/errors/InternalServerError');
+// const ERROR_CODE = require('../utils/errors/ErrorCode');
+// const NOT_FOUND_ERROR = require('../utils/errors/NotFoundError');
+// const CONFLICTING_REQUEST_ERROR = require('../utils/errors/ConflictingRequestError');
 
 const getUsers = (req, res) => {
   User.find({})
-    .then((user) => { res.status(200).send(user); })
-    .catch(() => res.status(INTERNAL_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' }));
+    .then((user) => {
+      res.status(200).send(user);
+    })
+    .catch(() => res
+      .status(INTERNAL_SERVER_ERROR)
+      .send({ message: 'На сервере произошла ошибка' }));
 };
 
 const getUserById = (req, res) => {
   const user = req.params._id;
-  User.findById(user).then((userData) => {
-    if (!userData) {
-      res.status(NOT_FOUND_ERROR).send({ message: 'Запрашиваемый пользователь не найден' });
-      return;
-    }
-    res.send({ data: userData });
-  }).catch((error) => {
-    if (error.name === 'CastError') {
-      res.status(ERROR_CODE).send({ message: 'ID неверный' });
-      return;
-    }
-    res.status(INTERNAL_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
-  });
+  User.findById(user)
+    .then((userInfo) => {
+      if (!userInfo) {
+        res
+          .status(NOT_FOUND_ERROR)
+          .send({ message: 'Запрашиваемый пользователь не найден' });
+        return;
+      }
+      res.send({ data: userInfo });
+    })
+    .catch((error) => {
+      if (error.name === 'CastError') {
+        res.status(ERROR_CODE).send({ message: 'ID неверный' });
+        return;
+      }
+      res
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: 'На сервере произошла ошибка' });
+    });
 };
 
-const createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
-
-  User.create({ name, about, avatar })
-    .then((userData) => {
-      res
-        .status(201)
-        .send({ data: userData });
+const createUser = (req, res, next) => {
+  const {
+    name, about, avatar, email, password,
+  } = req.body;
+  bcrypt
+    .hash(password, 10)
+    .then((hash) => User.create({
+      name,
+      about,
+      avatar,
+      email,
+      password: hash,
+    }))
+    .then((user) => {
+      const newInfo = user.toObject();
+      delete newInfo.password;
+      res.send(newInfo);
     })
     .catch((error) => {
       if (error.name === 'ValidationError') {
-        res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные' });
-      } else {
-        res.status(INTERNAL_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
+        next(
+          // new ERROR_CODE('Переданы некорректные данные'),
+          res
+            .status(ERROR_CODE)
+            .send({ message: 'Переданы некорректные данные' }),
+        );
       }
+      if (error.code === 11000) {
+        next(
+          // new ERROR_CODE('Такой пользователь уже существует'),
+          res
+            .status(ERROR_CODE)
+            .send({ message: 'Такой пользователь уже существует' }),
+        );
+      }
+      next(error);
     });
+};
+
+const login = (req, res) => {
+  const { email, password } = req.body;
+
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, 'some-secret-key', {
+        expiresIn: '7d',
+      });
+
+      res.send({ token });
+    })
+    .catch(() => {
+      res
+        .status(UNAUTHORIZED_ERROR)
+        .send({ message: 'Ошибка при авторизации' });
+    });
+};
+
+const getMyInfoById = (req, res) => {
+  User.findById(req.user._id).then((user) => {
+    if (!user) {
+      res
+        .status(ERROR_CODE)
+        .send({ message: 'Запрашиваемый пользователь не найден' });
+      return;
+    }
+    res.send(user);
+  });
 };
 
 const updateUser = (req, res) => {
   const { name, about } = req.body;
   const idUser = req.user._id;
-  User.findByIdAndUpdate(idUser, { name, about }, { new: true, runValidators: true })
+  User.findByIdAndUpdate(
+    idUser,
+    { name, about },
+    { new: true, runValidators: true },
+  )
     .then((userInfo) => {
       if (!userInfo) {
-        res.status(ERROR_CODE).send({ message: 'Запрашиваемый пользователь не найден' });
+        res
+          .status(ERROR_CODE)
+          .send({ message: 'Запрашиваемый пользователь не найден' });
         return;
       }
       res.send({ data: userInfo });
     })
     .catch((error) => {
       if (error.name === 'ValidationError') {
-        res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные' });
+        res
+          .status(ERROR_CODE)
+          .send({ message: 'Переданы некорректные данные' });
       } else {
-        res.status(INTERNAL_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
+        res
+          .status(INTERNAL_SERVER_ERROR)
+          .send({ message: 'На сервере произошла ошибка' });
       }
     });
 };
@@ -69,16 +153,22 @@ const updateAvatar = (req, res) => {
   User.findByIdAndUpdate(idUser, { avatar }, { new: true, runValidators: true })
     .then((userInfo) => {
       if (!userInfo) {
-        res.status(NOT_FOUND_ERROR).send({ message: 'Запрашиваемый пользователь не найден' });
+        res
+          .status(NOT_FOUND_ERROR)
+          .send({ message: 'Запрашиваемый пользователь не найден' });
         return;
       }
       res.send({ data: userInfo });
     })
     .catch((error) => {
       if (error.name === 'ValidationError') {
-        res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные' });
+        res
+          .status(ERROR_CODE)
+          .send({ message: 'Переданы некорректные данные' });
       } else {
-        res.status(INTERNAL_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
+        res
+          .status(INTERNAL_SERVER_ERROR)
+          .send({ message: 'На сервере произошла ошибка' });
       }
     });
 };
@@ -89,4 +179,6 @@ module.exports = {
   createUser,
   updateAvatar,
   updateUser,
+  login,
+  getMyInfoById,
 };
