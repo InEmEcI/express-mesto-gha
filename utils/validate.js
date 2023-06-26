@@ -21,16 +21,6 @@ const createUserVal = celebrate({
   }),
 });
 
-// const getUsersVal = {
-//     text: Joi.string().required().min(2),
-// }
-
-const getUserByIdVal = celebrate({
-  params: Joi.object().keys({
-    userId: Joi.string().length(24).hex().required(),
-  }),
-});
-
 const updateUserVal = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
@@ -47,6 +37,14 @@ const updateAvatarVal = celebrate({
   }),
 });
 
+// const getUsersVal = {
+//     text: Joi.string().required().min(2),
+// }
+
+// const getMyInfoVal = {
+
+// }
+
 const createCardVal = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30).required(),
@@ -56,10 +54,6 @@ const createCardVal = celebrate({
     ).required(),
   }),
 });
-
-// const getMyInfoVal = {
-
-// }
 
 // getCards,
 // createCard,
@@ -73,5 +67,4 @@ module.exports = {
   updateAvatarVal,
   updateUserVal,
   createCardVal,
-  getUserByIdVal,
 };

@@ -11,14 +11,13 @@ const {
 const {
   updateUserVal,
   updateAvatarVal,
-  getUserByIdVal,
 } = require('../utils/validate');
 
 router.get('/users/me', getAuthUserInfo);
 
 router.get('/users', getUsers);
 
-router.get('/users/:_id', getUserByIdVal, getUserById);
+router.get('/users/:_id', getUserById);
 
 router.patch('/users/me', updateUserVal, updateUser);
 

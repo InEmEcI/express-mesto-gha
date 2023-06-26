@@ -12,8 +12,8 @@ const {
 
 const getUsers = (req, res) => {
   User.find({})
-    .then((user) => {
-      res.status(200).send(user);
+    .then((users) => {
+      res.send({ data: users });
     })
     .catch(() => res
       .status(INTERNAL_SERVER_ERROR)
