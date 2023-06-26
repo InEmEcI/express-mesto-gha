@@ -31,13 +31,21 @@ const createUserVal = celebrate({
 
 // }
 
-// const updateUser = {
+const updateUserVal = celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30),
+    abour: Joi.string().min(2).max(30),
+  }),
+});
 
-// };
-
-// const updateAvatarVal = {
-
-// }
+const updateAvatarVal = celebrate({
+  body: Joi.object().keys({
+    avatar: Joi.string().regex(
+      // eslint-disable-next-line comma-dangle
+      /^(http|https):\/\/[\w.-]+(\/[\w-./?#@$!&'()*+,;=]*)?#?$/i
+    ),
+  }),
+});
 
 // const getMyInfoVal = {
 
@@ -53,4 +61,6 @@ const createUserVal = celebrate({
 module.exports = {
   loginVal,
   createUserVal,
+  updateAvatarVal,
+  updateUserVal,
 };
