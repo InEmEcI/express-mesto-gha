@@ -10,14 +10,12 @@ const {
   CONFLICTING_REQUEST_ERROR,
 } = require('../utils/errors');
 
-const getUsers = (req, res) => {
+const getUsers = (req, res, next) => {
   User.find({})
     .then((users) => {
       res.send({ data: users });
     })
-    .catch(() => res
-      .status(INTERNAL_SERVER_ERROR)
-      .send({ message: 'На сервере произошла ошибка' }));
+    .catch(next());
 };
 
 const getUserById = (req, res) => {
@@ -44,18 +42,18 @@ const getUserById = (req, res) => {
 };
 
 const createUser = (req, res, next) => {
-  const {
-    name, about, avatar, email, password,
-  } = req.body;
+  const { name, about, avatar, email, password } = req.body;
   bcrypt
     .hash(password, 10)
-    .then((hash) => User.create({
-      name,
-      about,
-      avatar,
-      email,
-      password: hash,
-    }))
+    .then((hash) =>
+      User.create({
+        name,
+        about,
+        avatar,
+        email,
+        password: hash,
+      })
+    )
     .then((user) => {
       const newInfo = user.toObject();
       delete newInfo.password;
@@ -66,14 +64,14 @@ const createUser = (req, res, next) => {
         next(
           res
             .status(ERROR_CODE)
-            .send({ message: 'Переданы некорректные данные' }),
+            .send({ message: 'Переданы некорректные данные' })
         );
       }
       if (error.code === 11000) {
         next(
           res
             .status(CONFLICTING_REQUEST_ERROR)
-            .send({ message: 'Такой пользователь уже существует' }),
+            .send({ message: 'Такой пользователь уже существует' })
         );
       }
       next(error);
@@ -105,18 +103,17 @@ const login = (req, res) => {
 //     })
 
 const getAuthUserInfo = (req, res) => {
-  User.findById(req.user._id)
-    .then((user) => {
-      if (!user) {
-        res
-          .status(ERROR_CODE)
-          .send({ message: 'Запрашиваемый пользователь не найден' });
-      } else {
-        const newInfo = user.toObject();
-        delete newInfo.password;
-        res.send(newInfo);
-      }
-    });
+  User.findById(req.user._id).then((user) => {
+    if (!user) {
+      res
+        .status(ERROR_CODE)
+        .send({ message: 'Запрашиваемый пользователь не найден' });
+    } else {
+      const newInfo = user.toObject();
+      delete newInfo.password;
+      res.send(newInfo);
+    }
+  });
 };
 
 const updateUser = (req, res) => {
@@ -125,7 +122,7 @@ const updateUser = (req, res) => {
   User.findByIdAndUpdate(
     idUser,
     { name, about },
-    { new: true, runValidators: true },
+    { new: true, runValidators: true }
   )
     .then((userInfo) => {
       if (!userInfo) {
