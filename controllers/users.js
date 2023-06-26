@@ -15,7 +15,7 @@ const getUsers = (req, res, next) => {
     .then((users) => {
       res.send({ data: users });
     })
-    .catch(next());
+    .catch(next);
 };
 
 const getUserById = (req, res) => {
