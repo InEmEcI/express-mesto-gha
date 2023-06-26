@@ -47,11 +47,11 @@ const updateAvatarVal = celebrate({
 
 const createCardVal = celebrate({
   body: Joi.object().keys({
-    name: Joi.string().min(2).max(30),
+    name: Joi.string().min(2).max(30).required(),
     link: Joi.string().regex(
       // eslint-disable-next-line comma-dangle
       /^(http|https):\/\/[\w.-]+(\/[\w-./?#@$!&'()*+,;=]*)?#?$/i
-    ),
+    ).required(),
   }),
 });
 
