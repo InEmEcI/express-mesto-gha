@@ -7,7 +7,7 @@ const {
   ERROR_CODE,
   NOT_FOUND_ERROR,
   UNAUTHORIZED_ERROR,
-  // CONFLICTING_REQUEST_ERROR,
+  CONFLICTING_REQUEST_ERROR,
 } = require('../utils/errors');
 
 const getUsers = (req, res) => {
@@ -72,7 +72,7 @@ const createUser = (req, res, next) => {
       if (error.code === 11000) {
         next(
           res
-            .status(ERROR_CODE)
+            .status(CONFLICTING_REQUEST_ERROR)
             .send({ message: 'Такой пользователь уже существует' }),
         );
       }
@@ -106,7 +106,7 @@ const getMyInfoById = (req, res) => {
         .send({ message: 'Запрашиваемый пользователь не найден' });
       return;
     }
-    res.send(user);
+    res.send({ data: user });
   });
 };
 

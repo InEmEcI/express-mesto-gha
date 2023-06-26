@@ -14,8 +14,6 @@ const createUserVal = celebrate({
     about: Joi.string().min(2).max(30),
     avatar: Joi.string().regex(
       // eslint-disable-next-line comma-dangle
-      // /^(https?:\/\/)?([\w\.]+)\.([a-z]{2,6}\.?)(\/[\w\.]*)*\/?$/
-      // eslint-disable-next-line comma-dangle
       /^(http|https):\/\/[\w.-]+(\/[\w-./?#@$!&'()*+,;=]*)?#?$/i
     ),
     email: Joi.string().email().required(),
