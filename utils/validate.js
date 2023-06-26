@@ -4,7 +4,7 @@ const { celebrate, Joi } = require('celebrate');
 const loginVal = celebrate({
   body: Joi.object().keys({
     email: Joi.string().email().required(),
-    password: Joi.string().required(),
+    password: Joi.string().min(8).required(),
   }),
 });
 
@@ -25,9 +25,11 @@ const createUserVal = celebrate({
 //     text: Joi.string().required().min(2),
 // }
 
-// const getUserByIdVal = {
-
-// }
+const getUserByIdVal = celebrate({
+  params: Joi.object().keys({
+    userId: Joi.string().length(24).hex().required(),
+  }),
+});
 
 const updateUserVal = celebrate({
   body: Joi.object().keys({
@@ -41,7 +43,7 @@ const updateAvatarVal = celebrate({
     avatar: Joi.string().regex(
       // eslint-disable-next-line comma-dangle
       /^(http|https):\/\/[\w.-]+(\/[\w-./?#@$!&'()*+,;=]*)?#?$/i
-    ),
+    ).required(),
   }),
 });
 
@@ -71,4 +73,5 @@ module.exports = {
   updateAvatarVal,
   updateUserVal,
   createCardVal,
+  getUserByIdVal,
 };

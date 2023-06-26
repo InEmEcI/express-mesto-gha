@@ -5,16 +5,20 @@ const {
   getUserById,
   updateUser,
   updateAvatar,
-  getMyInfoById,
+  getAuthUserInfo,
 } = require('../controllers/users');
 
-const { updateUserVal, updateAvatarVal } = require('../utils/validate');
+const {
+  updateUserVal,
+  updateAvatarVal,
+  getUserByIdVal,
+} = require('../utils/validate');
 
-router.get('/users/me', getMyInfoById);
+router.get('/users/me', getAuthUserInfo);
 
 router.get('/users', getUsers);
 
-router.get('/users/:_id', getUserById);
+router.get('/users/:_id', getUserByIdVal, getUserById);
 
 router.patch('/users/me', updateUserVal, updateUser);
 

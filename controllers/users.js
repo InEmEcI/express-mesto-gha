@@ -98,7 +98,7 @@ const login = (req, res) => {
     });
 };
 
-const getMyInfoById = (req, res) => {
+const getAuthUserInfo = (req, res) => {
   User.findById(req.user._id).then((user) => {
     if (!user) {
       res
@@ -173,5 +173,5 @@ module.exports = {
   updateAvatar,
   updateUser,
   login,
-  getMyInfoById,
+  getAuthUserInfo,
 };
