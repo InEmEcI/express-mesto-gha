@@ -1,4 +1,6 @@
 const router = require('express').Router();
+
+const { createCardVal } = require('../utils/validate');
 const {
   getCards,
   createCard,
@@ -9,7 +11,7 @@ const {
 
 router.get('/cards', getCards);
 
-router.post('/cards', createCard);
+router.post('/cards', createCardVal, createCard);
 
 router.delete('/cards/:_id', deleteCardById);
 
