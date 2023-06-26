@@ -3,8 +3,6 @@ const express = require('express');
 const mongoose = require('mongoose');
 const { errors } = require('celebrate');
 
-// const errorHandler = require('./middlewares/errorHandler');
-
 const app = express();
 
 const router = require('./routes/index');
@@ -20,7 +18,6 @@ app.use(express.json());
 
 app.use(router);
 
-// app.use(errorHandler);
 app.use(errors()); // обработчик ошибок celebrate
 
 app.listen(PORT, () => {

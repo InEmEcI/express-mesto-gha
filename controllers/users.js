@@ -98,16 +98,25 @@ const login = (req, res) => {
     });
 };
 
+// .then((user) => {
+//       const newInfo = user.toObject();
+//       delete newInfo.password;
+//       res.send(newInfo);
+//     })
+
 const getAuthUserInfo = (req, res) => {
-  User.findById(req.user._id).then((user) => {
-    if (!user) {
-      res
-        .status(ERROR_CODE)
-        .send({ message: 'Запрашиваемый пользователь не найден' });
-      return;
-    }
-    res.send({ data: user });
-  });
+  User.findById(req.user._id)
+    .then((user) => {
+      if (!user) {
+        res
+          .status(ERROR_CODE)
+          .send({ message: 'Запрашиваемый пользователь не найден' });
+      } else {
+        const newInfo = user.toObject();
+        delete newInfo.password;
+        res.send(newInfo);
+      }
+    });
 };
 
 const updateUser = (req, res) => {
