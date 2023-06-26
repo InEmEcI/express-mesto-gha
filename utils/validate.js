@@ -11,7 +11,7 @@ const loginVal = celebrate({
 const createUserVal = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
-    abour: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
     avatar: Joi.string().regex(
       // eslint-disable-next-line comma-dangle
       // /^(https?:\/\/)?([\w\.]+)\.([a-z]{2,6}\.?)(\/[\w\.]*)*\/?$/
@@ -33,8 +33,8 @@ const createUserVal = celebrate({
 
 const updateUserVal = celebrate({
   body: Joi.object().keys({
-    name: Joi.string().min(2).max(30).require(),
-    abour: Joi.string().min(2).max(30).require(),
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
   }),
 });
 
@@ -43,17 +43,17 @@ const updateAvatarVal = celebrate({
     avatar: Joi.string().regex(
       // eslint-disable-next-line comma-dangle
       /^(http|https):\/\/[\w.-]+(\/[\w-./?#@$!&'()*+,;=]*)?#?$/i
-    ).require(),
+    ),
   }),
 });
 
 const createCardVal = celebrate({
   body: Joi.object().keys({
-    name: Joi.string().min(2).max(30).require(),
+    name: Joi.string().min(2).max(30),
     link: Joi.string().regex(
       // eslint-disable-next-line comma-dangle
       /^(http|https):\/\/[\w.-]+(\/[\w-./?#@$!&'()*+,;=]*)?#?$/i
-    ).require(),
+    ),
   }),
 });
 
