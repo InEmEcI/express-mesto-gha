@@ -18,7 +18,7 @@ const getUsers = (req, res, next) => {
     .catch(next);
 };
 
-const getUserById = (req, res) => {
+const getUserById = (req, res, next) => {
   const user = req.params._id;
   User.findById(user)
     .then((userInfo) => {
@@ -30,15 +30,16 @@ const getUserById = (req, res) => {
       }
       res.send({ data: userInfo });
     })
-    .catch((error) => {
-      if (error.name === 'CastError') {
-        res.status(ERROR_CODE).send({ message: 'ID неверный' });
-        return;
-      }
-      res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: 'На сервере произошла ошибка' });
-    });
+    .catch(next);
+  // => {
+  //   if (error.name === 'CastError') {
+  //     res.status(ERROR_CODE).send({ message: 'ID неверный' });
+  //     return;
+  //   }
+  //   res
+  //     .status(INTERNAL_SERVER_ERROR)
+  //     .send({ message: 'На сервере произошла ошибка' });
+  // });
 };
 
 const createUser = (req, res, next) => {
