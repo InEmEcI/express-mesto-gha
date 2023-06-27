@@ -3,7 +3,7 @@ const {
   INTERNAL_SERVER_ERROR,
   ERROR_CODE,
   NOT_FOUND_ERROR,
-  FORBIDDEN,
+  FORBIDDEN_ERROR,
 } = require('../utils/errors');
 
 const Card = require('../models/card');
@@ -43,13 +43,17 @@ const deleteCardById = (req, res) => {
         res
           .status(NOT_FOUND_ERROR)
           .send({ message: 'Запрашиваемая карточка не найдена' });
-        return;
+      } if (Card.owner.toString() !== req.user._id) {
+        res
+          .status(FORBIDDEN_ERROR)
+          .send({ message: 'Нельзя удалить чужую карточку' });
       }
       res.send({ data: cardInfo });
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(FORBIDDEN).send({ message: 'ID неверный' });
+
+    .catch((error) => {
+      if (error.name === 'CastError') {
+        res.status(ERROR_CODE).send({ message: 'ID неверный' });
         return;
       }
       res

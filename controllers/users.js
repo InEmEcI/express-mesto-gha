@@ -31,15 +31,6 @@ const getUserById = (req, res, next) => {
       res.send({ data: userInfo });
     })
     .catch(next);
-  // => {
-  //   if (error.name === 'CastError') {
-  //     res.status(ERROR_CODE).send({ message: 'ID неверный' });
-  //     return;
-  //   }
-  //   res
-  //     .status(INTERNAL_SERVER_ERROR)
-  //     .send({ message: 'На сервере произошла ошибка' });
-  // });
 };
 
 const createUser = (req, res, next) => {
