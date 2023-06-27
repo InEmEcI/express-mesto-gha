@@ -63,8 +63,6 @@ const createCard = (req, res) => {
 // };
 
 const deleteCardById = (req, res, next) => {
-  // const cardId = req.params._id;
-  // const userId = req.user._id;
   Card.findById(req.params._id)
     .then((card) => {
       if (!card) {
@@ -77,13 +75,13 @@ const deleteCardById = (req, res, next) => {
           .status(FORBIDDEN_ERROR)
           .send({ message: 'Нельзя удалить чужую карточку' });
       }
-      Card.findByIdAndRemove(req.params.cardId)
+      Card.findByIdAndRemove(req.params._id)
         .then((user) => res.status(200).send({ data: user }))
         .catch((error) => {
           if (error.name === 'CastError') {
-            return next(
-              res.status(ERROR_CODE).send({ message: 'ID неверный' }),
-            );
+            res
+              .status(ERROR_CODE)
+              .send({ message: 'ID неверный' });
           }
           return next(error);
         });
