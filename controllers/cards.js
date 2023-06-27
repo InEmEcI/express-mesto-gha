@@ -35,31 +35,60 @@ const createCard = (req, res) => {
     });
 };
 
-const deleteCardById = (req, res) => {
-  const cardId = req.params._id;
-  Card.findByIdAndRemove(cardId)
-    .then((cardInfo) => {
-      if (!cardInfo) {
+// const deleteCardById = (req, res) => {
+//   const cardId = req.params._id;
+//   Card.findByIdAndRemove(cardId)
+//     .then((cardInfo) => {
+//       if (!cardInfo) {
+//         res
+//           .status(NOT_FOUND_ERROR)
+//           .send({ message: 'Запрашиваемая карточка не найдена' });
+//       } if (Card.owner.toString() !== req.user._id) {
+//         res
+//           .status(FORBIDDEN_ERROR)
+//           .send({ message: 'Нельзя удалить чужую карточку' });
+//       }
+//       res.send({ data: cardInfo });
+//     })
+
+//     .catch((error) => {
+//       if (error.name === 'CastError') {
+//         res.status(ERROR_CODE).send({ message: 'ID неверный' });
+//         return;
+//       }
+//       res
+//         .status(INTERNAL_SERVER_ERROR)
+//         .send({ message: 'На сервере произошла ошибка' });
+//     });
+// };
+
+const deleteCardById = (req, res, next) => {
+  // const cardId = req.params._id;
+  // const userId = req.user._id;
+  Card.findById(req.params._id)
+    .then((card) => {
+      if (!card) {
         res
           .status(NOT_FOUND_ERROR)
           .send({ message: 'Запрашиваемая карточка не найдена' });
-      } if (Card.owner.toString() !== req.user._id) {
+      }
+      if (card.owner.toString() !== req.user._id) {
         res
           .status(FORBIDDEN_ERROR)
           .send({ message: 'Нельзя удалить чужую карточку' });
       }
-      res.send({ data: cardInfo });
+      Card.findByIdAndRemove(req.params.cardId)
+        .then((user) => res.status(200).send({ data: user }))
+        .catch((error) => {
+          if (error.name === 'CastError') {
+            return next(
+              res.status(ERROR_CODE).send({ message: 'ID неверный' }),
+            );
+          }
+          return next(error);
+        });
     })
-
-    .catch((error) => {
-      if (error.name === 'CastError') {
-        res.status(ERROR_CODE).send({ message: 'ID неверный' });
-        return;
-      }
-      res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: 'На сервере произошла ошибка' });
-    });
+    .catch(next);
 };
 
 const likeCard = (req, res) => {
