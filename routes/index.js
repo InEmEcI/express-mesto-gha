@@ -18,7 +18,7 @@ router.use(auth);
 router.use(userRoutes);
 router.use(cardRoutes);
 
-router.use('/*', (req, res) => {
+router.use('/', (req, res) => {
   res.status(NOT_FOUND_ERROR).send({ message: 'Страница не найдена' });
 });
 

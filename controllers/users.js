@@ -88,12 +88,6 @@ const login = (req, res) => {
     });
 };
 
-// .then((user) => {
-//       const newInfo = user.toObject();
-//       delete newInfo.password;
-//       res.send(newInfo);
-//     })
-
 const getAuthUserInfo = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {

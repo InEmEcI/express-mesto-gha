@@ -30,17 +30,21 @@ const updateUserVal = celebrate({
 
 const updateAvatarVal = celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().regex(
-      // eslint-disable-next-line comma-dangle
-      /^(http|https):\/\/[\w.-]+(\/[\w-./?#@$!&'()*+,;=]*)?#?$/i
-    ).required(),
+    avatar: Joi.string()
+      .regex(
+        // eslint-disable-next-line comma-dangle
+        /^(http|https):\/\/[\w.-]+(\/[\w-./?#@$!&'()*+,;=]*)?#?$/i
+      )
+      .required(),
   }),
 });
 
 const createCardVal = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30).required(),
-    link: Joi.string().regex(/^(http|https):\/\/[\w.-]+(\/[\w-./?#@$!&'()*+,;=]*)?#?$/i).required(),
+    link: Joi.string()
+      .regex(/^(http|https):\/\/[\w.-]+(\/[\w-./?#@$!&'()*+,;=]*)?#?$/i)
+      .required(),
   }),
 });
 
@@ -67,11 +71,6 @@ const likeCardVal = celebrate({
     cardId: Joi.string().length(24).hex().required(),
   }),
 });
-// getCards,
-// createCard,
-// deleteCardById,
-// likeCard,
-// dislikeCard,
 
 module.exports = {
   loginVal,

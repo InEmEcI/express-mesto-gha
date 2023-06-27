@@ -4,7 +4,6 @@ const bcrypt = require('bcryptjs');
 const isEmail = require('validator/lib/isEmail');
 const isUrl = require('validator/lib/isURL');
 
-// Опишем схему:
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -63,5 +62,4 @@ userSchema.statics.findUserByCredentials = function (email, password) {
     });
 };
 
-// создаём модель и экспортируем её
 module.exports = mongoose.model('user', userSchema);
