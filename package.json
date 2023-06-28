@@ -1,7 +1,7 @@
 {
-  "name": "13_sprint",
+  "name": "14_sprint",
   "version": "1.0.0",
-  "description": "Mesto project: preparing the backend",
+  "description": "Mesto project: registration and authorization on the backend",
   "main": "app.js",
   "scripts": {
     "start": "node app",

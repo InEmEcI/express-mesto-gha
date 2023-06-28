@@ -1,6 +1,8 @@
 /* eslint-disable no-useless-escape */
 const { celebrate, Joi } = require('celebrate');
 
+const reg = /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/;
+
 const loginVal = celebrate({
   body: Joi.object().keys({
     email: Joi.string().email().required(),
@@ -12,10 +14,7 @@ const createUserVal = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().regex(
-      // eslint-disable-next-line comma-dangle
-      /^(http|https):\/\/[\w.-]+(\/[\w-./?#@$!&'()*+,;=]*)?#?$/i
-    ),
+    avatar: Joi.string().regex(reg),
     email: Joi.string().email().required(),
     password: Joi.string().required(),
   }),
@@ -30,21 +29,14 @@ const updateUserVal = celebrate({
 
 const updateAvatarVal = celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string()
-      .regex(
-        // eslint-disable-next-line comma-dangle
-        /^(http|https):\/\/[\w.-]+(\/[\w-./?#@$!&'()*+,;=]*)?#?$/i
-      )
-      .required(),
+    avatar: Joi.string().regex(reg).required(),
   }),
 });
 
 const createCardVal = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30).required(),
-    link: Joi.string()
-      .regex(/^(http|https):\/\/[\w.-]+(\/[\w-./?#@$!&'()*+,;=]*)?#?$/i)
-      .required(),
+    link: Joi.string().regex(reg).required(),
   }),
 });
 

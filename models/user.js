@@ -44,13 +44,12 @@ const userSchema = new mongoose.Schema({
     required: true,
     select: false,
   },
-}, { versionKey: false });
+});
 
 userSchema.statics.findUserByCredentials = function (email, password) {
   return this.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        // return Promise.reject(new Error('Неправильные почта или пароль'));
         throw new UNAUTHORIZED_ERROR('Неправильные почта или пароль');
       }
 
