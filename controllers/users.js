@@ -1,14 +1,12 @@
+/* eslint-disable consistent-return */
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
-const {
-  INTERNAL_SERVER_ERROR,
-  ERROR_CODE,
-  NOT_FOUND_ERROR,
-  UNAUTHORIZED_ERROR,
-  CONFLICTING_REQUEST_ERROR,
-} = require('../utils/errors');
+const INTERNAL_SERVER_ERROR = require('../utils/errors/InternalServerError');
+const ERROR_CODE = require('../utils/errors/ErrorCode');
+const NOT_FOUND_ERROR = require('../utils/errors/NotFoundError');
+const CONFLICTING_REQUEST_ERROR = require('../utils/errors/ConflictingRequestError');
 
 const getUsers = (req, res, next) => {
   User.find({})
@@ -23,10 +21,7 @@ const getUserById = (req, res, next) => {
   User.findById(user)
     .then((userInfo) => {
       if (!userInfo) {
-        res
-          .status(NOT_FOUND_ERROR)
-          .send({ message: 'Запрашиваемый пользователь не найден' });
-        return;
+        throw new NOT_FOUND_ERROR('Запрашиваемый пользователь не найден');
       }
       res.send({ data: userInfo });
     })
@@ -49,28 +44,22 @@ const createUser = (req, res, next) => {
     .then((user) => {
       const newInfo = user.toObject();
       delete newInfo.password;
-      res.send(newInfo);
+      res.status(201).send(newInfo);
     })
     .catch((error) => {
       if (error.name === 'ValidationError') {
-        next(
-          res
-            .status(ERROR_CODE)
-            .send({ message: 'Переданы некорректные данные' }),
-        );
+        return next(new ERROR_CODE('Переданы некорректные данные'));
       }
       if (error.code === 11000) {
-        next(
-          res
-            .status(CONFLICTING_REQUEST_ERROR)
-            .send({ message: 'Такой пользователь уже существует' }),
+        return next(
+          new CONFLICTING_REQUEST_ERROR('Такой пользователь уже существует'),
         );
       }
-      next(error);
+      return next(error);
     });
 };
 
-const login = (req, res) => {
+const login = (req, res, next) => {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
@@ -81,28 +70,21 @@ const login = (req, res) => {
 
       res.send({ token });
     })
-    .catch(() => {
-      res
-        .status(UNAUTHORIZED_ERROR)
-        .send({ message: 'Ошибка при авторизации' });
-    });
+    .catch(next);
 };
 
 const getAuthUserInfo = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
       if (!user) {
-        res
-          .status(NOT_FOUND_ERROR)
-          .send({ message: 'Запрашиваемый пользователь не найден' });
-        return;
+        throw new NOT_FOUND_ERROR('Запрашиваемый пользователь не найден');
       }
       res.send(user);
     })
     .catch(next);
 };
 
-const updateUser = (req, res) => {
+const updateUser = (req, res, next) => {
   const { name, about } = req.body;
   const idUser = req.user._id;
   User.findByIdAndUpdate(
@@ -112,48 +94,36 @@ const updateUser = (req, res) => {
   )
     .then((userInfo) => {
       if (!userInfo) {
-        res
-          .status(ERROR_CODE)
-          .send({ message: 'Запрашиваемый пользователь не найден' });
-        return;
+        return next(
+          new ERROR_CODE('Запрашиваемый пользователь не найден'),
+        );
       }
       res.send({ data: userInfo });
     })
     .catch((error) => {
       if (error.name === 'ValidationError') {
-        res
-          .status(ERROR_CODE)
-          .send({ message: 'Переданы некорректные данные' });
+        throw new ERROR_CODE('Переданы некорректные данные');
       } else {
-        res
-          .status(INTERNAL_SERVER_ERROR)
-          .send({ message: 'На сервере произошла ошибка' });
+        throw new INTERNAL_SERVER_ERROR('На сервере произошла ошибка');
       }
     });
 };
 
-const updateAvatar = (req, res) => {
+const updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
   const idUser = req.user._id;
   User.findByIdAndUpdate(idUser, { avatar }, { new: true, runValidators: true })
     .then((userInfo) => {
       if (!userInfo) {
-        res
-          .status(NOT_FOUND_ERROR)
-          .send({ message: 'Запрашиваемый пользователь не найден' });
-        return;
+        return next(new NOT_FOUND_ERROR('Запрашиваемый пользователь не найден'));
       }
       res.send({ data: userInfo });
     })
     .catch((error) => {
       if (error.name === 'ValidationError') {
-        res
-          .status(ERROR_CODE)
-          .send({ message: 'Переданы некорректные данные' });
+        throw new ERROR_CODE('Переданы некорректные данные');
       } else {
-        res
-          .status(INTERNAL_SERVER_ERROR)
-          .send({ message: 'На сервере произошла ошибка' });
+        throw new INTERNAL_SERVER_ERROR('На сервере произошла ошибка');
       }
     });
 };

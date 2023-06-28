@@ -1,7 +1,8 @@
 const router = require('express').Router();
 
 const { loginVal, createUserVal } = require('../utils/validate');
-const { NOT_FOUND_ERROR } = require('../utils/errors');
+// const { NOT_FOUND_ERROR } = require('../utils/errors');
+const NOT_FOUND_ERROR = require('../utils/errors/NotFoundError');
 
 const auth = require('../middlewares/auth');
 
@@ -18,8 +19,8 @@ router.use(auth);
 router.use(userRoutes);
 router.use(cardRoutes);
 
-router.use('/', (req, res) => {
-  res.status(NOT_FOUND_ERROR).send({ message: 'Страница не найдена' });
+router.use('/', () => {
+  throw new NOT_FOUND_ERROR('Страница не найдена');
 });
 
 module.exports = router;
