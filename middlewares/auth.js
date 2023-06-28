@@ -1,14 +1,14 @@
 /* eslint-disable consistent-return */
 const jwt = require('jsonwebtoken');
 
-const { UNAUTHORIZED_ERROR } = require('../utils/errors');
+const { UNAUTHORIZED_ERROR } = require('../utils/errors/errors');
 
 const auth = (req, res, next) => {
   const { authorization } = req.headers;
 
   if (!authorization || !authorization.startsWith('Bearer ')) {
     return res
-      .status(500)
+      .status(UNAUTHORIZED_ERROR)
       .send({ message: 'Необходима авторизация' });
   }
 
