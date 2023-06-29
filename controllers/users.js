@@ -94,18 +94,15 @@ const updateUser = (req, res, next) => {
   )
     .then((userInfo) => {
       if (!userInfo) {
-        return next(
-          new ERROR_CODE('Запрашиваемый пользователь не найден'),
-        );
+        return next(new ERROR_CODE('Запрашиваемый пользователь не найден'));
       }
       res.send({ data: userInfo });
     })
     .catch((error) => {
       if (error.name === 'ValidationError') {
-        throw new ERROR_CODE('Переданы некорректные данные');
-      } else {
-        throw new INTERNAL_SERVER_ERROR('На сервере произошла ошибка');
+        return next(new ERROR_CODE('Переданы некорректные данные'));
       }
+      return next(error);
     });
 };
 
@@ -115,16 +112,18 @@ const updateAvatar = (req, res, next) => {
   User.findByIdAndUpdate(idUser, { avatar }, { new: true, runValidators: true })
     .then((userInfo) => {
       if (!userInfo) {
-        return next(new NOT_FOUND_ERROR('Запрашиваемый пользователь не найден'));
+        next(
+          new NOT_FOUND_ERROR('Запрашиваемый пользователь не найден'),
+        );
       }
       res.send({ data: userInfo });
     })
     .catch((error) => {
       if (error.name === 'ValidationError') {
-        throw new ERROR_CODE('Переданы некорректные данные');
-      } else {
-        throw new INTERNAL_SERVER_ERROR('На сервере произошла ошибка');
-      }
+        next(
+          new ERROR_CODE('Переданы некорректные данные'),
+        );
+      } else next(error);
     });
 };
 
