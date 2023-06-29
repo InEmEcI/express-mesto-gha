@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 /* eslint-disable no-console */
 const ERROR_CODE = require('../utils/errors/ErrorCode');
 const NOT_FOUND_ERROR = require('../utils/errors/NotFoundError');
@@ -19,7 +20,7 @@ const createCard = (req, res, next) => {
     })
     .catch((error) => {
       if (error.name === 'ValidationError') {
-        next(new ERROR_CODE('Переданы некорректные данные'));
+        return next(new ERROR_CODE('Переданы некорректные данные'));
       }
       next(error);
     });
@@ -52,7 +53,7 @@ const likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     idCard,
     { $addToSet: { likes: userId } },
-    { new: true }
+    { new: true },
   )
     .then((card) => {
       if (!card) {
@@ -77,7 +78,7 @@ const dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     idCard,
     { $pull: { likes: userId } }, // убрать _id из массива
-    { new: true }
+    { new: true },
   )
     .then((card) => {
       if (!card) {
