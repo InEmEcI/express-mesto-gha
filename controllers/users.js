@@ -3,7 +3,6 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
-const INTERNAL_SERVER_ERROR = require('../utils/errors/InternalServerError');
 const ERROR_CODE = require('../utils/errors/ErrorCode');
 const NOT_FOUND_ERROR = require('../utils/errors/NotFoundError');
 const CONFLICTING_REQUEST_ERROR = require('../utils/errors/ConflictingRequestError');
