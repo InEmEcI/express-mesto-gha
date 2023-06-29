@@ -19,7 +19,7 @@ const createCard = (req, res, next) => {
     })
     .catch((error) => {
       if (error.name === 'ValidationError') {
-        throw new ERROR_CODE('Переданы некорректные данные');
+        next(new ERROR_CODE('Переданы некорректные данные'));
       }
       next(error);
     });
@@ -52,7 +52,7 @@ const likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     idCard,
     { $addToSet: { likes: userId } },
-    { new: true },
+    { new: true }
   )
     .then((card) => {
       if (!card) {
@@ -77,7 +77,7 @@ const dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     idCard,
     { $pull: { likes: userId } }, // убрать _id из массива
-    { new: true },
+    { new: true }
   )
     .then((card) => {
       if (!card) {
@@ -85,7 +85,8 @@ const dislikeCard = (req, res, next) => {
       } else {
         res.send({ data: card });
       }
-    }).catch((error) => {
+    })
+    .catch((error) => {
       if (error.name === 'CastError') {
         return next(new ERROR_CODE('ID неверный'));
       }
